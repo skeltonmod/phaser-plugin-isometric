@@ -1,4 +1,4 @@
-**This is a more recent repo that is made to work with the newer Phaser CE versions, Contributions are appreciated**
+**Contributions are appreciated for this recently updated repo, designed to work with newer Phaser CE versions.**
 
 Fork changelog
 ==============

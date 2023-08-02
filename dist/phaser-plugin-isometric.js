@@ -1578,10 +1578,12 @@ Phaser.Plugin.Isometric.Point3.prototype = {
      * @param {number} z - The value to add to Point3.z.
      * @return {Phaser.Plugin.Isometric.Point3} This Point3 object. Useful for chaining method calls.
      */
-    add: function (x, y) {
+    add: function (x, y, z) {
 
         this.x += x || 0;
         this.y += y || 0;
+        this.z += z || 0;
+
         return this;
 
     },
@@ -2455,7 +2457,7 @@ Phaser.Plugin.Isometric.Body.prototype = {
 
         this.blocked.up = false;
         this.blocked.down = false;
-        this.blocked.backX = false;
+        this.blocked.frontY = false;
         this.blocked.frontX = false;
         this.blocked.backY = false;
         this.blocked.backX = false;
@@ -2483,7 +2485,7 @@ Phaser.Plugin.Isometric.Body.prototype = {
         if (this.moves) {
             this.game.physics.isoArcade.updateMotion(this);
 
-            this.newVelocity.set(this.velocity.x * this.game.time.physicsElapsed, this.velocity.y * this.game.time.physicsElapsed, this.velocity.z * this.game.time.physicsElapsed);
+            this.newVelocity.set(this.velocity.x * game.time.elapsed / 1000, this.velocity.y * game.time.elapsed / 1000, this.velocity.z * game.time.elapsed / 1000);
 
             this.position.x += this.newVelocity.x;
             this.position.y += this.newVelocity.y;
@@ -2589,9 +2591,11 @@ Phaser.Plugin.Isometric.Body.prototype = {
                 }
             }
 
-            this.sprite.isoX += this._dx;
-            this.sprite.isoY += this._dy;
-            this.sprite.isoZ += this._dz;
+            if(this._dx !== 0 || this._dy !== 0 || this._dx !== 0){
+                this.sprite.isoX += this._dx;
+                this.sprite.isoY += this._dy;
+                this.sprite.isoZ += this._dz;
+            }
         }
 
         this.center.setTo(this.position.x + this.halfWidthX, this.position.y + this.halfWidthY, this.position.z + this.halfHeight);
@@ -2600,9 +2604,11 @@ Phaser.Plugin.Isometric.Body.prototype = {
             this.sprite.angle += this.deltaR();
         }
 
-        this.prev.x = this.position.x;
-        this.prev.y = this.position.y;
-        this.prev.z = this.position.z;
+        if (this.position.x !== this.prev.x || this.position.y !== this.prev.y || this.position.z !== this.prev.z){
+            this.prev.x = this.position.x;
+            this.prev.y = this.position.y;
+            this.prev.z = this.position.z;
+        }
 
         this._reset = false;
 
@@ -2670,7 +2676,7 @@ Phaser.Plugin.Isometric.Body.prototype = {
      * @param {number} height - The height of the Body.
      * @param {number} [offsetX] - The X offset of the Body from the Sprite position.
      * @param {number} [offsetY] - The Y offset of the Body from the Sprite position.
-     * @param {number} [offsetY] - The Z offset of the Body from the Sprite position.
+     * @param {number} [offsetZ] - The Z offset of the Body from the Sprite position.
      */
     setSize: function (widthX, widthY, height, offsetX, offsetY, offsetZ) {
 
@@ -3397,7 +3403,7 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
 
         this._velocityDelta = this.computeVelocity(0, body, body.angularVelocity, body.angularAcceleration, body.angularDrag, body.maxAngular) - body.angularVelocity;
         body.angularVelocity += this._velocityDelta;
-        body.rotation += (body.angularVelocity * this.game.time.physicsElapsed);
+        body.rotation += (body.angularVelocity * game.time.elapsed / 1000);
 
         body.velocity.x = this.computeVelocity(1, body, body.velocity.x, body.acceleration.x, body.drag.x, body.maxVelocity.x);
         body.velocity.y = this.computeVelocity(2, body, body.velocity.y, body.acceleration.y, body.drag.y, body.maxVelocity.y);
@@ -3423,17 +3429,17 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
         max = max || 10000;
 
         if (axis === 1 && body.allowGravity) {
-            velocity += (this.gravity.x + body.gravity.x) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.x + body.gravity.x) * game.time.elapsed / 1000;
         } else if (axis === 2 && body.allowGravity) {
-            velocity += (this.gravity.y + body.gravity.y) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.y + body.gravity.y) * game.time.elapsed / 1000;
         } else if (axis === 3 && body.allowGravity) {
-            velocity += (this.gravity.z + body.gravity.z) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.z + body.gravity.z) * game.time.elapsed / 1000;
         }
 
         if (acceleration) {
-            velocity += acceleration * this.game.time.physicsElapsed;
+            velocity += acceleration * game.time.elapsed / 1000;
         } else if (drag) {
-            this._drag = drag * this.game.time.physicsElapsed;
+            this._drag = drag * game.time.elapsed / 1000;
 
             if (velocity - this._drag > 0) {
                 velocity -= this._drag;

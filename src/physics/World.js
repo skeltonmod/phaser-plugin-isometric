@@ -268,7 +268,7 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
 
         this._velocityDelta = this.computeVelocity(0, body, body.angularVelocity, body.angularAcceleration, body.angularDrag, body.maxAngular) - body.angularVelocity;
         body.angularVelocity += this._velocityDelta;
-        body.rotation += (body.angularVelocity * this.game.time.physicsElapsed);
+        body.rotation += (body.angularVelocity * this.game.time.game.time.elapsed / 1000);
 
         body.velocity.x = this.computeVelocity(1, body, body.velocity.x, body.acceleration.x, body.drag.x, body.maxVelocity.x);
         body.velocity.y = this.computeVelocity(2, body, body.velocity.y, body.acceleration.y, body.drag.y, body.maxVelocity.y);
@@ -294,17 +294,17 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
         max = max || 10000;
 
         if (axis === 1 && body.allowGravity) {
-            velocity += (this.gravity.x + body.gravity.x) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.x + body.gravity.x) * this.game.time.game.time.elapsed / 1000;
         } else if (axis === 2 && body.allowGravity) {
-            velocity += (this.gravity.y + body.gravity.y) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.y + body.gravity.y) * this.game.time.game.time.elapsed / 1000;
         } else if (axis === 3 && body.allowGravity) {
-            velocity += (this.gravity.z + body.gravity.z) * this.game.time.physicsElapsed;
+            velocity += (this.gravity.z + body.gravity.z) * this.game.time.game.time.elapsed / 1000;
         }
 
         if (acceleration) {
-            velocity += acceleration * this.game.time.physicsElapsed;
+            velocity += acceleration * this.game.time.game.time.elapsed / 1000;
         } else if (drag) {
-            this._drag = drag * this.game.time.physicsElapsed;
+            this._drag = drag * this.game.time.game.time.elapsed / 1000;
 
             if (velocity - this._drag > 0) {
                 velocity -= this._drag;
@@ -890,9 +890,9 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
                     this._overlap = 0;
                 } else {
                     body1.touching.none = false;
-                    body1.touching.down = true;
+                    body1.touching.up = true;
                     body2.touching.none = false;
-                    body2.touching.up = true;
+                    body2.touching.down = true;
                 }
             } else if (body1.deltaZ() < body2.deltaZ()) {
                 //  Body1 is moving up and/or Body2 is moving down
@@ -902,9 +902,9 @@ Phaser.Plugin.Isometric.Arcade.prototype = {
                     this._overlap = 0;
                 } else {
                     body1.touching.none = false;
-                    body1.touching.up = true;
+                    body1.touching.down = true;
                     body2.touching.none = false;
-                    body2.touching.down = true;
+                    body2.touching.up = true;
                 }
             }
 

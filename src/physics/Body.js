@@ -494,7 +494,7 @@ Phaser.Plugin.Isometric.Body.prototype = {
         if (this.moves) {
             this.game.physics.isoArcade.updateMotion(this);
 
-            this.newVelocity.set(this.velocity.x * this.game.time.physicsElapsed, this.velocity.y * this.game.time.physicsElapsed, this.velocity.z * this.game.time.physicsElapsed);
+            this.newVelocity.set(this.velocity.x * game.time.elapsed / 1000, this.velocity.y * game.time.elapsed / 1000, this.velocity.z * game.time.elapsed / 1000);
 
             this.position.x += this.newVelocity.x;
             this.position.y += this.newVelocity.y;
@@ -600,9 +600,11 @@ Phaser.Plugin.Isometric.Body.prototype = {
                 }
             }
 
-            this.sprite.isoX += this._dx;
-            this.sprite.isoY += this._dy;
-            this.sprite.isoZ += this._dz;
+            if(this._dx !== 0 || this._dy !== 0 || this._dx !== 0){
+                this.sprite.isoX += this._dx;
+                this.sprite.isoY += this._dy;
+                this.sprite.isoZ += this._dz;
+            }
         }
 
         this.center.setTo(this.position.x + this.halfWidthX, this.position.y + this.halfWidthY, this.position.z + this.halfHeight);
@@ -611,9 +613,11 @@ Phaser.Plugin.Isometric.Body.prototype = {
             this.sprite.angle += this.deltaR();
         }
 
-        this.prev.x = this.position.x;
-        this.prev.y = this.position.y;
-        this.prev.z = this.position.z;
+        if (this.position.x !== this.prev.x || this.position.y !== this.prev.y || this.position.z !== this.prev.z){
+            this.prev.x = this.position.x;
+            this.prev.y = this.position.y;
+            this.prev.z = this.position.z;
+        }
 
         this._reset = false;
 
